@@ -2,3 +2,14 @@ small{
   padding: 5px;
   background-color: blue;
 }
+ol,ul {
+  list-style-type: none;
+}
+.edit-button {
+  margin-left: 10px;
+  margin-right: 7px;
+  margin-bottom: 8px;
+}
+.input-task{
+  margin-right: 7px;
+}

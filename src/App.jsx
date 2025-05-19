@@ -1,70 +1,106 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './App.css';
 
 function App() {
   let [arr, setarr] = useState([]);
-  let [task, settask] = useState('');
+  let [task, setTask] = useState('');
   let [error, seterror] = useState('');
   let [isEdit, setisEdit] = useState(false);
-  let [editindex, seteditindex] = useState('');
+  let [editindex, seteditindex] = useState(null);
 
+  
   let handelTask = e => {
-    settask(e.target.value);
+    setTask(e.target.value);
     seterror('');
   };
 
+  
   let handelSubmit = () => {
-    if (task == '') {
-      seterror('please enter a task');
+    if (task === '') {
+      seterror('Please enter a task');
     } else {
       let newarr = [...arr];
-      newarr.push(task);
+      newarr.push({ text: task, completed: false }); 
       setarr(newarr);
-      settask('');
+      setTask('');
     }
   };
 
+  
   let handelEdit = (item, index) => {
-    settask(item);
+    setTask(item.text);
     setisEdit(true);
     seteditindex(index);
   };
 
+  
   let handelupdate = () => {
-    if (task == '') {
-      seterror('please enter a task');
+    if (task === '') {
+      seterror('Please enter a task');
     } else {
       let newarr = [...arr];
-      newarr[editindex] = task;
+      newarr[editindex] = { ...newarr[editindex], text: task };
       setarr(newarr);
-      settask('');
+      setTask('');
       setisEdit(false);
     }
   };
 
+  
   let handelDelete = index => {
     let newarr = [...arr];
     newarr.splice(index, 1);
+
+    if (editindex === index) {
+      setisEdit(false);
+      setTask('');
+      seteditindex(null);
+    } else if (editindex > index) {
+      seteditindex(editindex - 1);
+    }
+
+    setarr(newarr);
+  };
+
+  
+  let toggleComplete = index => {
+    let newarr = [...arr];
+    newarr[index].completed = !newarr[index].completed; 
     setarr(newarr);
   };
 
   return (
     <>
-      <input onChange={handelTask} value={task} type="text" />
+      <input className='input-task'
+        value={task}
+        onChange={handelTask}
+        type="text"
+        placeholder="Enter task"
+      />
       {isEdit ? (
-        <button onClick={handelupdate}>update</button>
+        <button onClick={handelupdate}>Update</button>
       ) : (
-        <button onClick={handelSubmit}>submit</button>
+        <button onClick={handelSubmit}>Submit</button>
       )}
       <br />
-      {error && <small>{error}</small>}
+      {error && <small style={{ color: 'red' }}>{error}</small>}
+
       <ul>
         {arr.map((item, index) => (
           <li key={index}>
-            {item}
-            <button onClick={() => handelEdit(item, index)}>Edit</button>
+            <input
+              type="checkbox"
+              checked={item.completed}
+              onChange={() => toggleComplete(index)}
+            />
+            <span
+              style={{
+                textDecoration: item.completed ? 'line-through' : 'none',
+              }}
+            >
+              {item.text}
+            </span>
+            <button className='edit-button' onClick={() => handelEdit(item, index)}>Edit</button>
             <button onClick={() => handelDelete(index)}>Delete</button>
           </li>
         ))}
